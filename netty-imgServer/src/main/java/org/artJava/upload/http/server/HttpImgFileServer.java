@@ -15,6 +15,8 @@
  */
 package org.artJava.upload.http.server;
 
+import java.io.File;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -32,25 +34,21 @@ import io.netty.handler.stream.ChunkedWriteHandler;
  * @date 2016年6月13日
  * @version 1.0
  */
-public class HttpFileServer {
-
-	private static final String DEFAULT_URL = "/src/";
+public class HttpImgFileServer {
 
 	public void run(final int port, final String url) throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup)
-			.channel(NioServerSocketChannel.class)
-			.childHandler(new ChannelInitializer<SocketChannel>() {
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				protected void initChannel(SocketChannel ch) throws Exception {
 					ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
 					ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(65536));
 					ch.pipeline().addLast("http-encoder", new HttpResponseEncoder());
 					ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler());
-					ch.pipeline().addLast("fileServerHandler", new HttpFileServerHandler(url));
+					ch.pipeline().addLast("fileServerHandler", new HttpImgFileServerHandler(url));
 				}
 			});
 			ChannelFuture future = b.bind("127.0.0.1", port).sync();
@@ -63,17 +61,11 @@ public class HttpFileServer {
 	}
 
 	public static void main(String[] args) throws Exception {
+		
+		System.setProperty("img_file_path", "C:\\Users\\artJava\\Desktop\\temp");
 		int port = 8080;
-		if (args.length > 0) {
-			try {
-				port = Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-		}
-		String url = DEFAULT_URL;
-		if (args.length > 1)
-			url = args[1];
-		new HttpFileServer().run(port, url);
+		String url = "/image_01";
+		
+		new HttpImgFileServer().run(port, url);
 	}
 }
