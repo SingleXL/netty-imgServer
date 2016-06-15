@@ -39,8 +39,8 @@ import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
 
 /**
- * @author lilinfeng
- * @date 2014年2月14日
+ * @author artJava
+ * @date 2016年6月13日
  * @version 1.0
  */
 public class HttpImgFileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
